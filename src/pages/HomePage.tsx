@@ -1,11 +1,17 @@
 // src/pages/HomePage.tsx
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
-import { 
-  ArrowRight, Code2, Brain, Database, Globe, 
-  Zap, Target, Award, TrendingUp, Sparkles,
-  ChevronDown, Star, GitBranch, Coffee
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import {
+  ArrowRight, Code2, Brain, Database,
+  ChevronDown, GitBranch, Coffee,
+  Rocket, Box, Github, Linkedin, Mail, FileSpreadsheet
 } from 'lucide-react';
+import * as THREE from 'three';
+import {
+  SiPython, SiR, SiJavascript, SiTypescript, SiCplusplus, SiSwift, SiMysql,
+  SiPandas, SiNumpy, SiScikitlearn, SiPytorch, SiPostgresql, SiRedis, SiAmazon,
+  SiGit, SiDocker, SiFastapi, SiNodedotjs, SiReact
+} from 'react-icons/si';
 import './HomePage.css';
 
 interface HomePageProps {
@@ -13,22 +19,26 @@ interface HomePageProps {
 }
 
 const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
-  const [typedText, setTypedText] = useState('');
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [typedText, setTypedText] = useState('Data Scientist');
+  const [currentRole, setCurrentRole] = useState(0);
   const heroRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
   const isStatsInView = useInView(statsRef, { once: true });
-  
+
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"]
   });
-  
-  const y = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
+
+  const y = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
   const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
-  
-  const fullText = "Data Science Innovator";
-  
+
+  const roles = [
+    "Data Scientist",
+    "Machine Learning Engineer",
+    "AI Researcher"
+  ];
+
   // Counter animation for stats
   const [counters, setCounters] = useState({
     projects: 0,
@@ -37,33 +47,183 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
     commits: 0
   });
 
+  // Three.js 3D Scene
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mousePos = useRef({ x: 0, y: 0 });
+  const [show3D, setShow3D] = useState(true);
+
+  // Hide 3D render after scrolling
   useEffect(() => {
-    // Typing effect
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const heroHeight = window.innerHeight;
+
+      if (scrollPosition > heroHeight * 0.5) {
+        setShow3D(false);
+      } else {
+        setShow3D(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    camera.position.z = 30;
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    containerRef.current.appendChild(renderer.domElement);
+
+    // Create floating 3D objects
+    const objects: THREE.Mesh[] = [];
+    const geometries = [
+      new THREE.BoxGeometry(2, 2, 2),
+      new THREE.OctahedronGeometry(1.5),
+      new THREE.TetrahedronGeometry(1.8),
+      new THREE.IcosahedronGeometry(1.5),
+      new THREE.TorusGeometry(1.2, 0.4, 16, 100),
+      new THREE.ConeGeometry(1.2, 2.5, 8),
+    ];
+
+    const material = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.15
+    });
+
+    // Create 20 random objects
+    for (let i = 0; i < 20; i++) {
+      const geometry = geometries[Math.floor(Math.random() * geometries.length)];
+      const mesh = new THREE.Mesh(geometry.clone(), material.clone());
+
+      // Random position
+      mesh.position.x = (Math.random() - 0.5) * 60;
+      mesh.position.y = (Math.random() - 0.5) * 40;
+      mesh.position.z = (Math.random() - 0.5) * 30;
+
+      // Random rotation
+      mesh.rotation.x = Math.random() * Math.PI * 2;
+      mesh.rotation.y = Math.random() * Math.PI * 2;
+
+      // Store random velocity for animation
+      (mesh.userData as any).velocity = {
+        x: (Math.random() - 0.5) * 0.02,
+        y: (Math.random() - 0.5) * 0.02,
+        z: (Math.random() - 0.5) * 0.01
+      };
+      (mesh.userData as any).rotationSpeed = {
+        x: (Math.random() - 0.5) * 0.01,
+        y: (Math.random() - 0.5) * 0.01,
+        z: (Math.random() - 0.5) * 0.01
+      };
+
+      objects.push(mesh);
+      scene.add(mesh);
+    }
+
+    // Mouse tracking
+    const handleMouseMove = (e: MouseEvent) => {
+      mousePos.current = {
+        x: (e.clientX / window.innerWidth) * 2 - 1,
+        y: -(e.clientY / window.innerHeight) * 2 + 1
+      };
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+
+    // Handle resize
+    const handleResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener('resize', handleResize);
+
+    // Animation loop
+    const animate = () => {
+      requestAnimationFrame(animate);
+
+      // Update camera position based on mouse
+      camera.position.x += (mousePos.current.x * 5 - camera.position.x) * 0.05;
+      camera.position.y += (mousePos.current.y * 5 - camera.position.y) * 0.05;
+      camera.lookAt(scene.position);
+
+      // Animate objects
+      objects.forEach((obj) => {
+        const velocity = (obj.userData as any).velocity;
+        const rotationSpeed = (obj.userData as any).rotationSpeed;
+
+        // Move objects
+        obj.position.x += velocity.x;
+        obj.position.y += velocity.y;
+        obj.position.z += velocity.z;
+
+        // Bounce off boundaries
+        if (Math.abs(obj.position.x) > 30) velocity.x *= -1;
+        if (Math.abs(obj.position.y) > 20) velocity.y *= -1;
+        if (Math.abs(obj.position.z) > 15) velocity.z *= -1;
+
+        // Rotate objects
+        obj.rotation.x += rotationSpeed.x;
+        obj.rotation.y += rotationSpeed.y;
+        obj.rotation.z += rotationSpeed.z;
+      });
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('resize', handleResize);
+      if (containerRef.current) {
+        containerRef.current.removeChild(renderer.domElement);
+      }
+      renderer.dispose();
+    };
+  }, []);
+
+  useEffect(() => {
+    // Rotating roles effect
+    const roleInterval = setInterval(() => {
+      setCurrentRole((prev) => (prev + 1) % roles.length);
+    }, 4000);
+
+    return () => clearInterval(roleInterval);
+  }, []);
+
+  useEffect(() => {
+    // Typing effect for current role
     let index = 0;
+    setTypedText('');
     const typingInterval = setInterval(() => {
-      if (index <= fullText.length) {
-        setTypedText(fullText.slice(0, index));
+      if (index <= roles[currentRole].length) {
+        setTypedText(roles[currentRole].slice(0, index));
         index++;
       } else {
         clearInterval(typingInterval);
       }
-    }, 100);
-    
-    return () => clearInterval(typingInterval);
-  }, []);
+    }, 80);
 
-  useEffect(() => {
-    // Mouse tracking for parallax
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({
-        x: (e.clientX / window.innerWidth - 0.5) * 2,
-        y: (e.clientY / window.innerHeight - 0.5) * 2,
-      });
-    };
-    
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+    return () => clearInterval(typingInterval);
+  }, [currentRole]);
 
   useEffect(() => {
     // Animate counters when in view
@@ -72,7 +232,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         const duration = 2000;
         const step = target / (duration / 16);
         let current = 0;
-        
+
         const interval = setInterval(() => {
           current += step;
           if (current >= target) {
@@ -82,11 +242,11 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           setCounters(prev => ({ ...prev, [key]: Math.floor(current) }));
         }, 16);
       };
-      
-      animateCounter(15, 'projects');
-      animateCounter(25, 'skills');
-      animateCounter(3, 'experience');
-      animateCounter(500, 'commits');
+
+      animateCounter(20, 'projects');
+      animateCounter(30, 'skills');
+      animateCounter(4, 'experience');
+      animateCounter(1000, 'commits');
     }
   }, [isStatsInView]);
 
@@ -94,377 +254,300 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
     {
       icon: <Brain />,
       title: 'Machine Learning',
-      description: 'Building intelligent systems with PyTorch, TensorFlow, and cutting-edge algorithms',
-      gradient: 'linear-gradient(135deg, #667eea, #764ba2)'
+      description: 'Developing intelligent systems with PyTorch, TensorFlow, and state-of-the-art algorithms for real-world applications',
     },
     {
       icon: <Database />,
       title: 'Data Engineering',
-      description: 'Processing massive datasets with SQL, Spark, and modern data pipelines',
-      gradient: 'linear-gradient(135deg, #00d4aa, #00b894)'
+      description: 'Building robust data pipelines with SQL, Apache Spark, and cloud technologies to process millions of records',
     },
     {
-      icon: <Globe />,
-      title: 'Full-Stack Development',
-      description: 'Creating stunning web applications with React, Node.js, and cloud technologies',
-      gradient: 'linear-gradient(135deg, #f093fb, #f5576c)'
+      icon: <Code2 />,
+      title: 'Software Development',
+      description: 'Creating efficient, scalable applications with modern programming languages and best practices',
     },
     {
-      icon: <Zap />,
-      title: 'Performance Optimization',
-      description: 'Achieving sub-100ms response times and 99.9% uptime in production systems',
-      gradient: 'linear-gradient(135deg, #ffd700, #ffb800)'
+      icon: <Rocket />,
+      title: 'Research & Innovation',
+      description: 'Exploring cutting-edge AI techniques and contributing to the advancement of data science',
     }
   ];
 
-  const skills = [
-    { name: 'Python', level: 95, category: 'Language' },
-    { name: 'React', level: 90, category: 'Frontend' },
-    { name: 'Machine Learning', level: 85, category: 'AI/ML' },
-    { name: 'SQL', level: 88, category: 'Database' },
-    { name: 'Node.js', level: 85, category: 'Backend' },
-    { name: 'AWS', level: 80, category: 'Cloud' }
+  const techStack = [
+    { name: 'Python', icon: <SiPython size={50} /> },
+    { name: 'JavaScript', icon: <SiJavascript size={50} /> },
+    { name: 'TypeScript', icon: <SiTypescript size={50} /> },
+    { name: 'React', icon: <SiReact size={50} /> },
+    { name: 'Node.js', icon: <SiNodedotjs size={50} /> },
+    { name: 'PostgreSQL', icon: <SiPostgresql size={50} /> },
+    { name: 'MySQL', icon: <SiMysql size={50} /> },
+    { name: 'PyTorch', icon: <SiPytorch size={50} /> },
+    { name: 'pandas', icon: <SiPandas size={50} /> },
+    { name: 'Docker', icon: <SiDocker size={50} /> },
+    { name: 'AWS', icon: <SiAmazon size={50} /> },
+    { name: 'Git', icon: <SiGit size={50} /> },
+    { name: 'FastAPI', icon: <SiFastapi size={50} /> },
+    { name: 'Redis', icon: <SiRedis size={50} /> },
+    { name: 'Excel', icon: <FileSpreadsheet size={50} strokeWidth={1.5} /> },
+    { name: 'C++', icon: <SiCplusplus size={50} /> },
+    { name: 'R', icon: <SiR size={50} /> },
+    { name: 'Swift', icon: <SiSwift size={50} /> }
   ];
 
   return (
     <div className="home-page">
+      {/* Three.js 3D Background */}
+      <div
+        ref={containerRef}
+        className="threejs-container"
+        style={{
+          opacity: show3D ? 1 : 0,
+          transition: 'opacity 0.5s ease-out'
+        }}
+      />
+
       {/* Hero Section */}
       <section ref={heroRef} className="hero-section">
-        {/* Animated Background */}
-        <div className="hero-background">
-          <motion.div 
-            className="bg-gradient-1"
-            animate={{
-              scale: [1, 1.2, 1],
-              rotate: [0, 90, 0],
-            }}
-            transition={{ duration: 20, repeat: Infinity }}
-          />
-          <motion.div 
-            className="bg-gradient-2"
-            animate={{
-              scale: [1.2, 1, 1.2],
-              rotate: [90, 0, 90],
-            }}
-            transition={{ duration: 15, repeat: Infinity }}
-          />
-          <motion.div 
-            className="bg-gradient-3"
-            animate={{
-              scale: [1, 1.3, 1],
-              rotate: [0, -90, 0],
-            }}
-            transition={{ duration: 25, repeat: Infinity }}
-          />
-          
-          {/* Floating particles */}
-          <div className="particles">
-            {[...Array(20)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="particle"
-                initial={{ 
-                  x: Math.random() * window.innerWidth,
-                  y: Math.random() * window.innerHeight 
-                }}
-                animate={{
-                  x: Math.random() * window.innerWidth,
-                  y: Math.random() * window.innerHeight,
-                }}
-                transition={{
-                  duration: Math.random() * 20 + 10,
-                  repeat: Infinity,
-                  repeatType: 'reverse',
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        <motion.div 
+        <motion.div
           className="hero-content"
           style={{ y, opacity }}
         >
-          {/* Animated Avatar */}
-          <motion.div 
-            className="hero-avatar"
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ 
-              type: 'spring',
-              stiffness: 260,
-              damping: 20,
-              duration: 0.8 
-            }}
+          {/* Simple Avatar */}
+          <motion.div
+            className="avatar-wrapper"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            whileHover={{ scale: 1.05 }}
           >
-            <motion.div 
-              className="avatar-glow"
-              animate={{ 
-                scale: [1, 1.2, 1],
-                opacity: [0.5, 0.8, 0.5] 
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
-            />
-            <div className="avatar-content">
+            <div className="avatar-circle">
               <span className="avatar-text">JG</span>
             </div>
-            <motion.div 
-              className="avatar-ring ring-1"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
-            />
-            <motion.div 
-              className="avatar-ring ring-2"
-              animate={{ rotate: -360 }}
-              transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
-            />
           </motion.div>
 
-          {/* Hero Text */}
-          <motion.h1 
-            className="hero-title"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            Hi, I'm{' '}
-            <span className="gradient-text">Joshua Gulizia</span>
-          </motion.h1>
-
-          <motion.div 
-            className="hero-subtitle"
+          {/* Title */}
+          <motion.div
+            className="hero-text"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
           >
-            <span className="typed-text">{typedText}</span>
-            <motion.span 
-              className="cursor"
-              animate={{ opacity: [1, 0, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
-            >
-              |
-            </motion.span>
+            <div className="hero-title">
+              <div className="greeting">Hello, I'm</div>
+              <h1 className="name">Joshua Gulizia</h1>
+            </div>
+
+            {/* Role Display */}
+            <div className="role-container">
+              <span className="role-text">{typedText}</span>
+              <motion.span
+                className="cursor"
+                animate={{ opacity: [1, 0] }}
+                transition={{ duration: 0.8, repeat: Infinity, repeatType: "reverse" }}
+              >
+                |
+              </motion.span>
+            </div>
+
+            <p className="hero-description">
+              Transforming complex data into actionable insights and building
+              intelligent systems that drive real-world impact. Pursuing Computer Science
+              at the University of Houston with aspirations for a PhD in Data Science.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="cta-buttons">
+              <motion.button
+                className="btn-primary"
+                onClick={() => onNavigate('projects')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                View My Work
+                <ArrowRight size={20} />
+              </motion.button>
+
+              <motion.button
+                className="btn-secondary"
+                onClick={() => onNavigate('contact')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Get In Touch
+              </motion.button>
+            </div>
+
+            {/* Social Links */}
+            <div className="social-links">
+              <motion.a
+                href="https://github.com/jguliz"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-icon"
+                whileHover={{ y: -3, scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Github size={20} />
+              </motion.a>
+              <motion.a
+                href="https://linkedin.com/in/josh-gulizia-401474290"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-icon"
+                whileHover={{ y: -3, scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Linkedin size={20} />
+              </motion.a>
+              <motion.a
+                href="mailto:jgulizia1205@gmail.com"
+                className="social-icon"
+                whileHover={{ y: -3, scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Mail size={20} />
+              </motion.a>
+            </div>
           </motion.div>
 
-          <motion.p 
-            className="hero-description"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
+          {/* Scroll Indicator */}
+          <motion.div
+            className="scroll-indicator"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
           >
-            Transforming complex data into actionable insights and building 
-            intelligent systems that make real-world impact. Currently pursuing 
-            Computer Science at the University of Houston with aspirations 
-            for a PhD in Data Science.
-          </motion.p>
-
-          {/* CTA Buttons */}
-          <motion.div 
-            className="hero-cta"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-          >
-            <motion.button 
-              className="cta-primary"
-              onClick={() => onNavigate('projects')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Sparkles size={20} />
-              Explore My Work
-              <ArrowRight size={20} />
-            </motion.button>
-            
-            <motion.button 
-              className="cta-secondary"
-              onClick={() => onNavigate('contact')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Let's Connect
-            </motion.button>
+            <ChevronDown size={24} />
           </motion.div>
-        </motion.div>
-
-        {/* Scroll Indicator */}
-        <motion.div 
-          className="scroll-indicator"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <span>Scroll to explore</span>
-          <ChevronDown size={20} />
         </motion.div>
       </section>
 
       {/* Stats Section */}
       <section ref={statsRef} className="stats-section">
         <div className="container">
-          <motion.div 
-            className="stats-grid"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isStatsInView ? 1 : 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <motion.div 
-              className="stat-card"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="stat-icon">
-                <Code2 size={32} />
-              </div>
-              <div className="stat-number">{counters.projects}+</div>
-              <div className="stat-label">Projects Completed</div>
-            </motion.div>
-
-            <motion.div 
-              className="stat-card"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="stat-icon">
-                <Zap size={32} />
-              </div>
-              <div className="stat-number">{counters.skills}+</div>
-              <div className="stat-label">Technologies</div>
-            </motion.div>
-
-            <motion.div 
-              className="stat-card"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="stat-icon">
-                <Coffee size={32} />
-              </div>
-              <div className="stat-number">{counters.experience}</div>
-              <div className="stat-label">Years Experience</div>
-            </motion.div>
-
-            <motion.div 
-              className="stat-card"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="stat-icon">
-                <GitBranch size={32} />
-              </div>
-              <div className="stat-number">{counters.commits}+</div>
-              <div className="stat-label">Git Commits</div>
-            </motion.div>
-          </motion.div>
+          <div className="stats-grid">
+            {[
+              { icon: Code2, value: counters.projects, label: 'Projects', suffix: '+' },
+              { icon: Box, value: counters.skills, label: 'Technologies', suffix: '+' },
+              { icon: Coffee, value: counters.experience, label: 'Years', suffix: '' },
+              { icon: GitBranch, value: counters.commits, label: 'Commits', suffix: '+' },
+            ].map((stat, index) => (
+              <motion.div
+                key={index}
+                className="stat-card"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: isStatsInView ? 1 : 0, y: isStatsInView ? 0 : 20 }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+              >
+                <stat.icon className="stat-icon" size={32} />
+                <div className="stat-value">
+                  {stat.value}{stat.suffix}
+                </div>
+                <div className="stat-label">{stat.label}</div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Features Section */}
       <section className="features-section">
         <div className="container">
-          <motion.div 
+          <motion.div
             className="section-header"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
           >
-            <h2 className="section-title">What I Do</h2>
-            <p className="section-subtitle">
-              Specializing in cutting-edge technologies to deliver exceptional solutions
-            </p>
+            <h2 className="section-title">Expertise</h2>
           </motion.div>
 
-          <div className="features-grid">
+          <div className="features-grid-new">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
-                className="feature-card"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                className="feature-card-modern"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
-                }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                whileHover={{ scale: 1.05 }}
               >
-                <motion.div 
-                  className="feature-icon"
-                  style={{ background: feature.gradient }}
-                  whileHover={{ rotate: 360 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  {feature.icon}
-                </motion.div>
-                <h3>{feature.title}</h3>
-                <p>{feature.description}</p>
+                <div className="feature-card-glow" />
+                <div className="feature-content-modern">
+                  <div className="feature-icon-modern">{feature.icon}</div>
+                  <h3 className="feature-title-modern">{feature.title}</h3>
+                  <p className="feature-description-modern">{feature.description}</p>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Skills Section */}
-      <section className="skills-section">
+      {/* Tech Stack Section */}
+      <section className="tech-section">
         <div className="container">
-          <motion.div 
+          <motion.div
             className="section-header"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
           >
-            <h2 className="section-title">Technical Proficiency</h2>
-            <p className="section-subtitle">
-              My expertise across different technologies
-            </p>
+            <h2 className="section-title">Skills</h2>
           </motion.div>
 
-          <div className="skills-grid">
-            {skills.map((skill, index) => (
+          <div className="tech-grid-modern">
+            {techStack.map((tech, index) => (
               <motion.div
                 key={index}
-                className="skill-item"
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                className="tech-card-modern"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ delay: index * 0.03, duration: 0.5 }}
+                whileHover={{ scale: 1.12, y: -8 }}
               >
-                <div className="skill-header">
-                  <span className="skill-name">{skill.name}</span>
-                  <span className="skill-level">{skill.level}%</span>
+                <div className="tech-card-inner">
+                  <motion.div
+                    className="tech-icon-logo"
+                    whileHover={{ rotate: 360, scale: 1.1 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    {tech.icon}
+                  </motion.div>
+                  <h4 className="tech-name-modern">{tech.name}</h4>
                 </div>
-                <div className="skill-bar">
-                  <motion.div 
-                    className="skill-progress"
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${skill.level}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
-                  />
-                </div>
-                <span className="skill-category">{skill.category}</span>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Final CTA Section */}
       <section className="cta-section">
         <div className="container">
-          <motion.div 
-            className="cta-content"
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+          <motion.div
+            className="cta-box"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
           >
-            <Star className="cta-icon" />
-            <h2>Ready to Build Something Amazing?</h2>
-            <p>Let's collaborate on your next big project</p>
-            <motion.button 
+            <h2 className="cta-title">Let's Collaborate</h2>
+            <p className="cta-text">
+              Ready to build something innovative together? Let's turn ideas into reality.
+            </p>
+            <motion.button
               className="cta-button"
               onClick={() => onNavigate('contact')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05, y: -3 }}
+              whileTap={{ scale: 0.98 }}
             >
               Get In Touch
-              <ArrowRight size={20} />
+              <ArrowRight size={22} />
             </motion.button>
           </motion.div>
         </div>

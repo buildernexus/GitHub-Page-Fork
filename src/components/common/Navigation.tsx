@@ -71,13 +71,12 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate }) => {
       >
         <div className="nav-container">
           {/* Logo */}
-          <motion.div 
+          <motion.div
             className="nav-logo"
             onClick={() => handleNavClick('home')}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Sparkles size={24} className="logo-icon" />
             <span className="logo-text">JG</span>
           </motion.div>
 

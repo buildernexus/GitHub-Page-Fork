@@ -38,16 +38,6 @@ const pageVariants = {
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<string>('home');
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Initial loading animation
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   // Handle navigation
   const handleNavigate = (page: string) => {
@@ -68,46 +58,6 @@ const App: React.FC = () => {
     setSelectedProjectId(null);
     setCurrentPage('projects');
   };
-
-  // Splash screen
-  if (isLoading) {
-    return (
-      <motion.div 
-        className="splash-screen"
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <motion.div
-          className="splash-content"
-          initial={{ scale: 0.5, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-        >
-          <motion.div 
-            className="splash-logo"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-          >
-            <div className="logo-inner">JG</div>
-          </motion.div>
-          <motion.h1
-            className="splash-title"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            Joshua Gulizia
-          </motion.h1>
-          <motion.div 
-            className="splash-loader"
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            transition={{ duration: 1.5, ease: 'easeInOut' }}
-          />
-        </motion.div>
-      </motion.div>
-    );
-  }
 
   // Main app render
   return (
@@ -317,7 +267,7 @@ const App: React.FC = () => {
           height: 50px;
           margin: 0 auto 1rem;
           border: 3px solid rgba(255, 255, 255, 0.1);
-          border-top-color: #667eea;
+          border-top-color: #ffffff;
           border-radius: 50%;
           animation: spin 1s linear infinite;
         }
@@ -361,7 +311,7 @@ const App: React.FC = () => {
           justify-content: center;
           font-size: 3rem;
           font-weight: 900;
-          background: linear-gradient(135deg, #667eea, #764ba2);
+          background: linear-gradient(135deg, #ffffff, #888888);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
@@ -390,7 +340,7 @@ const App: React.FC = () => {
           top: 0;
           left: 0;
           height: 100%;
-          background: linear-gradient(90deg, #667eea, #764ba2);
+          background: linear-gradient(90deg, #ffffff, #cccccc);
           border-radius: 3px;
         }
 
@@ -415,7 +365,7 @@ const App: React.FC = () => {
         .footer-section h4 {
           font-size: 1.5rem;
           margin-bottom: 0.5rem;
-          background: linear-gradient(135deg, #667eea, #764ba2);
+          background: linear-gradient(135deg, #ffffff, #888888);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
@@ -445,7 +395,7 @@ const App: React.FC = () => {
 
         .footer-section button:hover,
         .footer-section a:hover {
-          color: #667eea;
+          color: #ffffff;
         }
 
         .footer-bottom {

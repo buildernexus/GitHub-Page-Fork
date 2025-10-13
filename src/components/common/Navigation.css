@@ -37,25 +37,13 @@
   }
   
   .logo-icon {
-    color: #667eea;
-    animation: sparkle 3s ease-in-out infinite;
-  }
-  
-  @keyframes sparkle {
-    0%, 100% { 
-      transform: rotate(0deg) scale(1);
-      filter: brightness(1);
-    }
-    50% { 
-      transform: rotate(180deg) scale(1.1);
-      filter: brightness(1.3);
-    }
+    color: #ffffff;
   }
   
   .logo-text {
     font-size: 1.5rem;
     font-weight: 900;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #ffffff, #888888);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: -1px;
@@ -90,8 +78,8 @@
   }
   
   .nav-item.active {
-    color: #667eea;
-    background: rgba(102, 126, 234, 0.1);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
   }
   
   .nav-icon {
@@ -116,7 +104,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    background: linear-gradient(90deg, #ffffff, #cccccc);
     border-radius: var(--radius-full);
   }
   
@@ -140,8 +128,8 @@
   }
   
   .social-link:hover {
-    background: rgba(102, 126, 234, 0.1);
-    color: #667eea;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
   }
   
   .resume-btn {
@@ -149,17 +137,17 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
+    background: linear-gradient(135deg, #ffffff, #cccccc);
+    color: #0a0a0a;
     border-radius: var(--radius-full);
     font-weight: 600;
     text-decoration: none;
     transition: all var(--transition-base);
   }
-  
+
   .resume-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.3);
   }
   
   /* Mobile Menu Button */
@@ -213,7 +201,7 @@
   }
   
   .mobile-logo svg {
-    color: #667eea;
+    color: #ffffff;
   }
   
   .mobile-nav {
@@ -244,8 +232,8 @@
   }
   
   .mobile-nav-item.active {
-    background: rgba(102, 126, 234, 0.1);
-    color: #667eea;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
   }
   
   .mobile-nav-icon {
@@ -264,7 +252,7 @@
     transform: translateY(-50%);
     width: 3px;
     height: 30px;
-    background: linear-gradient(180deg, #667eea, #764ba2);
+    background: linear-gradient(180deg, #ffffff, #cccccc);
     border-radius: var(--radius-full);
   }
   
@@ -295,8 +283,8 @@
   }
   
   .mobile-social-link:hover {
-    background: rgba(102, 126, 234, 0.1);
-    color: #667eea;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
   }
   
   .mobile-resume-btn {
@@ -305,8 +293,8 @@
     justify-content: center;
     gap: 0.5rem;
     padding: 1rem;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
+    background: linear-gradient(135deg, #ffffff, #cccccc);
+    color: #0a0a0a;
     border-radius: var(--radius-md);
     font-weight: 600;
     text-decoration: none;
@@ -324,7 +312,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    background: linear-gradient(90deg, #ffffff, #cccccc);
     transform-origin: left;
   }
   
