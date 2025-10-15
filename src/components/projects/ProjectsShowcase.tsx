@@ -58,8 +58,7 @@ const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({ onProjectSelect }) 
       }
     });
 
-  const featuredProject = filteredProjects.find(p => p.featured);
-  const regularProjects = filteredProjects.filter(p => !p.featured);
+  const regularProjects = filteredProjects;
 
   useEffect(() => {
     // Parallax effect for featured project
@@ -78,109 +77,45 @@ const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({ onProjectSelect }) 
   }, []);
 
   const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, index }) => {
-    const isHovered = hoveredProject === project.id;
-    
     return (
       <motion.div
-        className={`project-card ${isHovered ? 'hovered' : ''}`}
+        className="project-card"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.1, duration: 0.5 }}
-        onMouseEnter={() => setHoveredProject(project.id)}
-        onMouseLeave={() => setHoveredProject(null)}
+        transition={{ delay: index * 0.05, duration: 0.4 }}
         onClick={() => onProjectSelect?.(project.id)}
-        layout
       >
-        {/* Background gradient effect */}
-        <div 
-          className="card-gradient"
-          style={{
-            background: `linear-gradient(135deg, ${project.color.primary}20, ${project.color.secondary}10)`,
-            opacity: isHovered ? 1 : 0
-          }}
-        />
-
         {/* Status Badge */}
-        <div className="status-badge" style={{ background: statusColors[project.status].bg }}>
+        <div className="status-badge">
           {statusColors[project.status].icon}
           <span>{statusColors[project.status].text}</span>
         </div>
 
-        {/* Thumbnail with overlay */}
+        {/* Thumbnail */}
         <div className="project-thumbnail">
-          <div className="thumbnail-overlay">
-            <motion.div
-              className="overlay-content"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isHovered ? 1 : 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <button className="view-btn">
-                <Eye size={20} />
-                <span>View Details</span>
-              </button>
-              {project.liveDemo && (
-                <a href={project.liveDemo} target="_blank" rel="noopener noreferrer" 
-                   onClick={(e) => e.stopPropagation()} className="demo-btn">
-                  <Play size={20} />
-                  <span>Live Demo</span>
-                </a>
-              )}
-            </motion.div>
-          </div>
-          
-          {/* Tech stack floating badges */}
           <div className="tech-badges">
-            {project.techStack.slice(0, 3).map((tech, i) => (
-              <motion.div
-                key={tech.name}
-                className="tech-badge"
-                initial={{ scale: 0 }}
-                animate={{ scale: isHovered ? 1 : 0 }}
-                transition={{ delay: i * 0.1 }}
-              >
+            {project.techStack.slice(0, 3).map((tech) => (
+              <div key={tech.name} className="tech-badge">
                 {tech.name}
-              </motion.div>
+              </div>
             ))}
             {project.techStack.length > 3 && (
-              <motion.div
-                className="tech-badge more"
-                initial={{ scale: 0 }}
-                animate={{ scale: isHovered ? 1 : 0 }}
-                transition={{ delay: 0.3 }}
-              >
+              <div className="tech-badge more">
                 +{project.techStack.length - 3}
-              </motion.div>
+              </div>
             )}
           </div>
         </div>
 
         {/* Content */}
         <div className="project-content">
-          <h3 className="project-title">
-            {project.title}
-            {project.featured && (
-              <span className="featured-star">
-                <Star size={16} fill="currentColor" />
-              </span>
-            )}
-          </h3>
+          <h3 className="project-title">{project.title}</h3>
           <p className="project-subtitle">{project.subtitle}</p>
           <p className="project-description">{project.description}</p>
 
-          {/* Metrics */}
-          <div className="project-metrics">
-            {project.metrics.slice(0, 3).map((metric) => (
-              <div key={metric.label} className="metric">
-                <div className="metric-value">{metric.value}</div>
-                <div className="metric-label">{metric.label}</div>
-              </div>
-            ))}
-          </div>
-
           {/* Tags */}
           <div className="project-tags">
-            {project.tags.slice(0, 4).map(tag => (
+            {project.tags.slice(0, 5).map(tag => (
               <span key={tag} className="tag">{tag}</span>
             ))}
           </div>
@@ -189,44 +124,21 @@ const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({ onProjectSelect }) 
           <div className="project-actions">
             {project.github && (
               <a href={project.github} target="_blank" rel="noopener noreferrer"
-                 onClick={(e) => e.stopPropagation()} className="action-link">
+                 onClick={(e) => e.stopPropagation()} className="action-link" title="View on GitHub">
                 <Github size={18} />
               </a>
             )}
             {project.liveDemo && (
               <a href={project.liveDemo} target="_blank" rel="noopener noreferrer"
-                 onClick={(e) => e.stopPropagation()} className="action-link">
+                 onClick={(e) => e.stopPropagation()} className="action-link" title="Live Demo">
                 <ExternalLink size={18} />
               </a>
             )}
-            <button className="action-link" onClick={() => onProjectSelect?.(project.id)}>
+            <button className="action-link" onClick={() => onProjectSelect?.(project.id)} title="View Details">
               <ChevronRight size={18} />
             </button>
           </div>
         </div>
-
-        {/* Hover effect particles */}
-        {isHovered && (
-          <div className="hover-particles">
-            {[...Array(5)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="particle"
-                initial={{ scale: 0, x: 0, y: 0 }}
-                animate={{
-                  scale: [0, 1, 0],
-                  x: Math.random() * 100 - 50,
-                  y: Math.random() * 100 - 50,
-                }}
-                transition={{
-                  duration: 1,
-                  delay: i * 0.1,
-                  repeat: Infinity,
-                }}
-              />
-            ))}
-          </div>
-        )}
       </motion.div>
     );
   };
@@ -252,7 +164,6 @@ const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({ onProjectSelect }) 
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <Sparkles className="title-icon" />
             Projects that Push Boundaries
           </motion.h1>
           <motion.p
@@ -263,31 +174,6 @@ const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({ onProjectSelect }) 
           >
             Explore my portfolio of innovative solutions, from ML-powered platforms to stunning web experiences
           </motion.p>
-
-          {/* Stats */}
-          <motion.div
-            className="hero-stats"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            <div className="stat">
-              <div className="stat-number">{projectsData.length}</div>
-              <div className="stat-label">Projects</div>
-            </div>
-            <div className="stat">
-              <div className="stat-number">20+</div>
-              <div className="stat-label">Technologies</div>
-            </div>
-            <div className="stat">
-              <div className="stat-number">100K+</div>
-              <div className="stat-label">Lines of Code</div>
-            </div>
-            <div className="stat">
-              <div className="stat-number">∞</div>
-              <div className="stat-label">Passion</div>
-            </div>
-          </motion.div>
         </div>
       </motion.div>
 
@@ -372,96 +258,6 @@ const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({ onProjectSelect }) 
           )}
         </AnimatePresence>
       </div>
-
-      {/* Featured Project */}
-      {featuredProject && (
-        <motion.div 
-          className="featured-project"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="featured-badge">
-            <Star size={20} fill="currentColor" />
-            <span>Featured Project</span>
-          </div>
-          
-          <div className="featured-content">
-            <div className="featured-info">
-              <h2 className="featured-title">{featuredProject.title}</h2>
-              <p className="featured-subtitle">{featuredProject.subtitle}</p>
-              <p className="featured-description">{featuredProject.longDescription}</p>
-              
-              <div className="featured-metrics">
-                {featuredProject.metrics.map(metric => (
-                  <div key={metric.label} className="featured-metric">
-                    <Zap className="metric-icon" />
-                    <div>
-                      <div className="metric-value">{metric.value}</div>
-                      <div className="metric-label">{metric.label}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="featured-actions">
-                <button 
-                  className="primary-btn"
-                  onClick={() => onProjectSelect?.(featuredProject.id)}
-                >
-                  <Eye size={20} />
-                  View Case Study
-                </button>
-                {featuredProject.liveDemo && (
-                  <a 
-                    href={featuredProject.liveDemo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="secondary-btn"
-                  >
-                    <Play size={20} />
-                    Live Demo
-                  </a>
-                )}
-              </div>
-            </div>
-            
-            <div className="featured-visual">
-              <div className="visual-container">
-                <div className="code-preview">
-                  {featuredProject.codeSnippets?.[0] && (
-                    <pre>
-                      <code>{featuredProject.codeSnippets[0].code}</code>
-                    </pre>
-                  )}
-                </div>
-                <div className="tech-stack-visual">
-                  {featuredProject.techStack.map((tech, i) => (
-                    <motion.div
-                      key={tech.name}
-                      className="tech-item"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.1 }}
-                    >
-                      <div className="tech-name">{tech.name}</div>
-                      <div className="tech-bar">
-                        <motion.div
-                          className="tech-fill"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${tech.proficiency}%` }}
-                          transition={{ delay: 0.5 + i * 0.1, duration: 0.8 }}
-                          style={{ background: featuredProject.color.primary }}
-                        />
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
 
       {/* Projects Grid */}
       <div className={`projects-grid ${viewMode}`}>

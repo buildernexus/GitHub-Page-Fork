@@ -1,4 +1,5 @@
 // src/components/common/Navigation.tsx
+// Updated navigation with project-detail routing support
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -82,25 +83,29 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate }) => {
 
           {/* Desktop Menu */}
           <div className="nav-menu desktop">
-            {navItems.map(item => (
-              <motion.button
-                key={item.id}
-                className={`nav-item ${currentPage === item.id ? 'active' : ''}`}
-                onClick={() => handleNavClick(item.id)}
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <span className="nav-icon">{item.icon}</span>
-                <span className="nav-label">{item.label}</span>
-                {currentPage === item.id && (
-                  <motion.div 
-                    className="nav-indicator"
-                    layoutId="nav-indicator"
-                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  />
-                )}
-              </motion.button>
-            ))}
+            {navItems.map((item) => {
+              const isActive = currentPage === item.id || (currentPage === 'project-detail' && item.id === 'projects');
+
+              return (
+                <motion.button
+                  key={item.id}
+                  className={`nav-item ${isActive ? 'active' : ''}`}
+                  onClick={() => handleNavClick(item.id)}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span className="nav-icon">{item.icon}</span>
+                  <span className="nav-label">{item.label}</span>
+                  {isActive && (
+                    <motion.div
+                      className="nav-indicator"
+                      layoutId="nav-indicator"
+                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                    />
+                  )}
+                </motion.button>
+              );
+            })}
           </div>
 
           {/* Desktop Actions */}
@@ -192,25 +197,28 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate }) => {
               </div>
 
               <nav className="mobile-nav">
-                {navItems.map((item, index) => (
-                  <motion.button
-                    key={item.id}
-                    className={`mobile-nav-item ${currentPage === item.id ? 'active' : ''}`}
-                    onClick={() => handleNavClick(item.id)}
-                    initial={{ x: 50, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <span className="mobile-nav-icon">{item.icon}</span>
-                    <span className="mobile-nav-label">{item.label}</span>
-                    {currentPage === item.id && (
-                      <motion.div 
-                        className="mobile-nav-indicator"
-                        layoutId="mobile-nav-indicator"
-                      />
-                    )}
-                  </motion.button>
-                ))}
+                {navItems.map((item, index) => {
+                  const isActive = currentPage === item.id || (currentPage === 'project-detail' && item.id === 'projects');
+                  return (
+                    <motion.button
+                      key={item.id}
+                      className={`mobile-nav-item ${isActive ? 'active' : ''}`}
+                      onClick={() => handleNavClick(item.id)}
+                      initial={{ x: 50, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <span className="mobile-nav-icon">{item.icon}</span>
+                      <span className="mobile-nav-label">{item.label}</span>
+                      {isActive && (
+                        <motion.div
+                          className="mobile-nav-indicator"
+                          layoutId="mobile-nav-indicator"
+                        />
+                      )}
+                    </motion.button>
+                  );
+                })}
               </nav>
 
               <div className="mobile-menu-footer">

@@ -1,9 +1,9 @@
 // src/pages/ExperiencePage.tsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
+import {
   Briefcase, Calendar, MapPin, ChevronRight,
-  Database, Code2, TrendingUp, Users, 
+  Database, Code2, TrendingUp, Users,
   CheckCircle, Award, Zap, Target,
   BookOpen, GitBranch, Terminal, Globe
 } from 'lucide-react';
@@ -13,6 +13,7 @@ interface Experience {
   id: string;
   title: string;
   company: string;
+  companyLogo?: React.ReactNode;
   location: string;
   startDate: string;
   endDate: string;
@@ -25,6 +26,43 @@ interface Experience {
   color: string;
 }
 
+const Trophy = () => (
+  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6m12 0h1.5a2.5 2.5 0 0 1 0 5H18M6 4h12v11a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V4Z"/>
+    <path d="M12 19v3m-4 0h8"/>
+  </svg>
+);
+
+const Star = () => (
+  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+  </svg>
+);
+
+const SunSkiLogo = () => (
+  <svg viewBox="0 0 242.2 68" width="180" height="52" fill="currentColor">
+    <path d="M60.1,25.2c4.9-1.7,8.4-6.3,8.4-11.8C68.5,6.5,62.9,1,56,1S43.5,6.5,43.5,13.4c0,2,0.5,3.8,1.3,5.5l4.5-4.5L60.1,25.2z"/>
+    <polygon points="25,18.4 0.7,42.7 12.9,54.8 25,42.7 49.3,66.9 61.4,54.8"/>
+    <polygon points="39.1,28.5 63.4,52.8 73.5,42.7 49.2,18.5"/>
+    <polygon points="0.7,42.7 12.9,54.8 25,18.5"/>
+    <polygon points="25,18.5 25,42.7 49.2,66.9"/>
+    <polygon points="39.1,28.5 63.4,52.8 49.2,18.5" opacity="0.2"/>
+    <path d="M97,16.9c-0.2-1.5-1.4-2.5-4.6-2.5c-2.4,0-3.7,0.7-3.7,2.1c0,0.7,0.5,1.1,1.6,1.3c1.8,0.3,7.3,1.1,9.4,1.5c4,0.7,6.4,2.3,6.4,6.1c0,7.3-9.4,7.3-12.3,7.3c-7.3,0-12.5-1.3-12.9-7.3h8.4c0.2,1.6,1.1,2.6,4.8,2.6c1.8,0,3.7-0.4,3.7-2.2c0-1.1-0.9-1.5-3.4-1.9l-7.1-1.1c-4.4-0.7-6.1-2.9-6.1-6.1c0-2.8,1.7-6.8,11.1-6.8c7.8,0,12.4,1.9,12.9,6.9H97z"/>
+    <path d="M108.5,15.8h6.4v8.4c0,2.8,1.2,3.7,3.3,3.7c2.2,0,4-1.2,4-3.9v-8.2h6.4V32h-6.2v-2.1h-0.1c-1.3,1.6-3.6,2.8-6.8,2.8c-3.9,0-6.9-1.7-6.9-6.6V15.8z"/>
+    <path d="M131.8,15.8h6.2v2.3h0.1c1.3-1.6,3.6-2.8,6.8-2.8c4,0,6.9,1.9,6.9,6V32h-6.4v-8.8c0-2.1-1.2-3.1-3.3-3.1c-2.2,0-4,1.2-4,3.9v8h-6.4V15.8z"/>
+    <path d="M173.6,29.6c-1.6,2-4.6,3-7.6,3c-6.4,0-8.5-3.5-8.5-6.4c0-2.7,1.6-5,5.6-6.4c-1.9-1.7-2.3-3.1-2.3-4.3c0-2.9,2-4.8,5.5-4.8c3.4,0,5.4,2.1,5.4,4.6c0,1.7-1,3.7-4.1,5l5.7,5.2c0.6-1,0.9-1.9,1-3.3h2.8c-0.1,1.6-0.5,3.4-1.8,5.2l5,4.6h-4.2L173.6,29.6z M164.8,21.5c-3.3,1.4-4.1,2.9-4.1,4.6c0,1.7,1.2,4,5.4,4c2.1,0,4.2-0.5,5.5-2.2L164.8,21.5z M165.8,18.7c2.2-0.9,3.1-2.1,3.1-3.2c0-1.2-1.1-2.3-2.6-2.3c-1.9,0-2.8,1.1-2.8,2.2C163.6,16.4,164.3,17.3,165.8,18.7"/>
+    <path d="M199.6,16.9c-0.2-1.5-1.4-2.5-4.6-2.5c-2.4,0-3.7,0.7-3.7,2.1c0,0.7,0.5,1.1,1.6,1.3c1.8,0.3,7.3,1.1,9.4,1.5c4,0.7,6.4,2.3,6.4,6.1c0,7.3-9.4,7.3-12.3,7.3c-7.3,0-12.5-1.3-12.9-7.3h8.4c0.2,1.6,1.1,2.6,4.8,2.6c1.8,0,3.7-0.4,3.7-2.2c0-1.1-0.9-1.5-3.4-1.9l-7.1-1.1c-4.4-0.7-6.1-2.9-6.1-6.1c0-2.8,1.7-6.8,11.1-6.8c7.8,0,12.4,1.9,12.9,6.9H199.6z"/>
+    <polygon points="211.2,10.1 217.5,10.1 217.5,21.5 223.9,15.8 232.5,15.8 225,21.8 233.2,32 224.5,32 219.9,25.9 217.5,27.8 217.5,32 211.2,32"/>
+    <path d="M234.6,10.1h6.4v3.8h-6.4V10.1z M234.6,15.8h6.4V32h-6.4V15.8z"/>
+    <path d="M113,45.1c-0.2-1.5-1.4-2.5-4.6-2.5c-2.4,0-3.7,0.7-3.7,2.1c0,0.7,0.5,1.1,1.6,1.3c1.8,0.3,7.3,1.1,9.4,1.5c4,0.7,6.4,2.3,6.4,6.1c0,7.2-9.4,7.3-12.3,7.3c-7.2,0-12.5-1.3-12.9-7.2h8.4c0.2,1.6,1.1,2.6,4.8,2.6c1.8,0,3.7-0.4,3.7-2.2c0-1.1-0.9-1.5-3.4-1.9l-7.1-1.1c-4.4-0.7-6.1-2.9-6.1-6c0-2.8,1.7-6.8,11.1-6.8c7.8,0,12.4,1.9,12.9,6.9H113z"/>
+    <path d="M123.9,44h6.2v2.2h0.1c1.3-1.6,3.6-2.6,6.2-2.6c5.7,0,9.5,3.2,9.5,8.8c0,4.7-3.5,8.5-9.4,8.5c-2.8,0-5-0.9-6-2.1h-0.1v7.3h-6.3V44z M134.8,56.3c2.9,0,4.5-1.4,4.5-4.1c0-2.7-1.6-4.1-4.5-4.1c-3,0-4.5,1.6-4.5,4.1S131.8,56.3,134.8,56.3z"/>
+    <path d="M159.1,43.3c7.3,0,11.4,3,11.4,8.8s-4,8.8-11.4,8.8c-7.3,0-11.4-3-11.4-8.8S151.7,43.3,159.1,43.3z M154.4,52.1c0,3.1,1.8,4.6,4.7,4.6c2.9,0,4.7-1.5,4.7-4.6c0-3.1-1.8-4.6-4.7-4.6C156.2,47.5,154.4,49.1,154.4,52.1z"/>
+    <path d="M172.3,44h6.3v3.2h0.1c1.3-2.2,3.7-3.6,6.6-3.6c0.7,0,1.5,0.1,2.2,0.2v5.9c-0.8-0.3-2.3-0.5-3.5-0.5c-3.6,0-5.2,1.9-5.2,4.8v6.3h-6.3V44z"/>
+    <path d="M188.5,44h3.3v-5.2h6.3V44h4.2v4.2h-4.2v6.5c0,1.5,0.4,1.7,2.1,1.7c0.8,0,1.4,0,2.2-0.1v4c-1.3,0.2-3,0.3-4.8,0.3c-4.1,0-5.8-1-5.8-4.5v-7.9h-3.3V44z"/>
+    <path d="M211.3,55.2c0.1,0.6,0.3,1.1,0.9,1.4c0.6,0.3,1.4,0.5,2.8,0.5c1.4,0,2.9-0.3,2.9-1.4c0-0.9-0.6-1.1-2.2-1.3l-5.7-0.7c-3.7-0.4-5.6-1.8-5.6-4.5c0-4.4,3.8-5.8,9.9-5.8c4.3,0,9.8,0.8,10.1,5.4h-7.1c-0.1-0.7-0.5-1.1-1.1-1.4c-0.6-0.3-1.5-0.4-2.3-0.4c-1.8,0-2.9,0.4-2.9,1.5c0,0.5,0.4,1,2,1.1l5.5,0.6c4.4,0.5,6.5,1.8,6.5,5c0,3.8-3.7,5.6-10.4,5.6c-4.5,0-10.6-0.8-10.7-5.7H211.3z"/>
+  </svg>
+);
+
 const ExperiencePage: React.FC = () => {
   const [selectedExperience, setSelectedExperience] = useState<string | null>(null);
 
@@ -33,6 +71,7 @@ const ExperiencePage: React.FC = () => {
       id: 'data-science-intern',
       title: 'Data Science Intern',
       company: 'Sun & Ski Sports',
+      companyLogo: <SunSkiLogo />,
       location: 'Houston, TX',
       startDate: 'Aug 2025',
       endDate: 'Present',
@@ -47,7 +86,7 @@ const ExperiencePage: React.FC = () => {
         'Developed predictive models for inventory optimization with 85% accuracy'
       ],
       technologies: ['Python', 'PostgreSQL', 'Power BI', 'Pandas', 'NumPy', 'Scikit-learn', 'ETL', 'Azure'],
-      icon: <Database />,
+      icon: <SunSkiLogo />,
       color: '#667eea'
     },
     {
@@ -94,25 +133,6 @@ const ExperiencePage: React.FC = () => {
     }
   ];
 
-  const skills = {
-    technical: [
-      { name: 'Python', level: 95 },
-      { name: 'React', level: 90 },
-      { name: 'SQL', level: 88 },
-      { name: 'Machine Learning', level: 85 },
-      { name: 'Data Visualization', level: 92 },
-      { name: 'Cloud Computing', level: 80 }
-    ],
-    soft: [
-      'Problem Solving',
-      'Team Leadership',
-      'Communication',
-      'Project Management',
-      'Mentoring',
-      'Critical Thinking'
-    ]
-  };
-
   const achievements = [
     {
       icon: <Award />,
@@ -133,19 +153,6 @@ const ExperiencePage: React.FC = () => {
       date: '2025'
     }
   ];
-
-  const Trophy = () => (
-    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6m12 0h1.5a2.5 2.5 0 0 1 0 5H18M6 4h12v11a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V4Z"/>
-      <path d="M12 19v3m-4 0h8"/>
-    </svg>
-  );
-
-  const Star = () => (
-    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-    </svg>
-  );
 
   return (
     <div className="experience-page">
@@ -206,7 +213,12 @@ const ExperiencePage: React.FC = () => {
                   <div className="content-header">
                     <div className="header-info">
                       <h3>{exp.title}</h3>
-                      <p className="company">{exp.company}</p>
+                      {exp.companyLogo && (
+                        <div className="company-logo-container">
+                          {exp.companyLogo}
+                        </div>
+                      )}
+                      {!exp.companyLogo && <p className="company">{exp.company}</p>}
                       <div className="meta">
                         <span className="location">
                           <MapPin size={14} />
@@ -278,88 +290,6 @@ const ExperiencePage: React.FC = () => {
               </motion.div>
             ))}
           </motion.div>
-        </div>
-      </section>
-
-      {/* Skills Section */}
-      <section className="skills-section">
-        <div className="container">
-          <motion.div 
-            className="section-header"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2>Technical Expertise</h2>
-            <p>Technologies and skills I've mastered throughout my journey</p>
-          </motion.div>
-          
-          <div className="skills-grid">
-            <motion.div 
-              className="skills-column"
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <h3>
-                <Terminal size={24} />
-                Technical Skills
-              </h3>
-              <div className="skill-bars">
-                {skills.technical.map((skill, index) => (
-                  <motion.div 
-                    key={skill.name}
-                    className="skill-item"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <div className="skill-header">
-                      <span className="skill-name">{skill.name}</span>
-                      <span className="skill-level">{skill.level}%</span>
-                    </div>
-                    <div className="skill-bar">
-                      <motion.div 
-                        className="skill-progress"
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
-                      />
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              className="skills-column"
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <h3>
-                <Users size={24} />
-                Soft Skills
-              </h3>
-              <div className="soft-skills">
-                {skills.soft.map((skill, index) => (
-                  <motion.span 
-                    key={skill}
-                    className="soft-skill-tag"
-                    initial={{ opacity: 0, scale: 0 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    whileHover={{ scale: 1.1 }}
-                  >
-                    {skill}
-                  </motion.span>
-                ))}
-              </div>
-            </motion.div>
-          </div>
         </div>
       </section>
 

@@ -1,14 +1,40 @@
 // src/pages/AboutPage.tsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  GraduationCap, MapPin, Calendar, Award, 
+import {
+  GraduationCap, MapPin, Calendar, Award,
   Target, Heart, Coffee, Code2, BookOpen,
   Sparkles, TrendingUp, Users, Star
 } from 'lucide-react';
 import './AboutPage.css';
 
 const AboutPage: React.FC = () => {
+  // Calculate days since a start date (Jan 1, 2024 = 600 energy drinks)
+  const startDate = new Date('2024-01-01');
+  const today = new Date();
+  const daysPassed = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+  const energyDrinkCount = 600 + daysPassed;
+
+  const [displayCount, setDisplayCount] = useState(0);
+
+  useEffect(() => {
+    // Animate the counter on mount
+    let start = 0;
+    const duration = 2000; // 2 seconds
+    const increment = energyDrinkCount / (duration / 16); // ~60fps
+
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= energyDrinkCount) {
+        setDisplayCount(energyDrinkCount);
+        clearInterval(timer);
+      } else {
+        setDisplayCount(Math.floor(start));
+      }
+    }, 16);
+
+    return () => clearInterval(timer);
+  }, [energyDrinkCount]);
   const education = {
     degree: 'Bachelor of Science in Computer Science',
     minor: 'Mathematics',
@@ -29,12 +55,6 @@ const AboutPage: React.FC = () => {
       issuer: 'IBM',
       date: '2024',
       skills: ['Machine Learning', 'SQL', 'Data Visualization']
-    },
-    {
-      title: 'AWS Certified Cloud Practitioner',
-      issuer: 'Amazon Web Services',
-      date: '2024',
-      skills: ['Cloud Computing', 'AWS Services', 'Security']
     }
   ];
 
@@ -56,66 +76,17 @@ const AboutPage: React.FC = () => {
     <div className="about-page">
       {/* Hero Section */}
       <section className="about-hero">
-        <motion.div 
+        <motion.div
           className="hero-content"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <motion.div 
-            className="profile-image-container"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-          >
-            <div className="profile-image">
-              <span>JG</span>
-            </div>
-            <motion.div 
-              className="profile-ring"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            />
-          </motion.div>
-          
           <h1 className="hero-title">About Me</h1>
           <p className="hero-subtitle">
-            Passionate about transforming data into actionable insights and building intelligent systems
+            Data Scientist | Machine Learning Engineer | AI Researcher
           </p>
         </motion.div>
-      </section>
-
-      {/* Story Section */}
-      <section className="story-section">
-        <div className="container">
-          <motion.div 
-            className="story-content"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            <h2>My Journey</h2>
-            <div className="story-text">
-              <p>
-                I'm an aspiring data scientist with a deep passion for uncovering insights from complex datasets 
-                and building intelligent systems that make real-world impact. Currently pursuing my Bachelor's 
-                degree in Computer Science with a minor in Mathematics at the University of Houston, I've dedicated 
-                myself to mastering the intersection of technology and data.
-              </p>
-              <p>
-                My journey began with a fascination for how data can tell stories and predict the future. This led 
-                me to dive deep into machine learning, statistical modeling, and full-stack development. Through 
-                internships, personal projects, and continuous learning, I've built expertise in Python, React, 
-                SQL, and various ML frameworks.
-              </p>
-              <p>
-                My ultimate goal is to pursue a PhD in Data Science, where I plan to conduct cutting-edge research 
-                in machine learning and artificial intelligence. I'm particularly interested in developing novel 
-                algorithms that can extract meaningful patterns from massive, unstructured datasets.
-              </p>
-            </div>
-          </motion.div>
-        </div>
       </section>
 
       {/* Education Section */}
@@ -151,10 +122,6 @@ const AboutPage: React.FC = () => {
                 <div className="meta-item">
                   <Calendar size={16} />
                   <span>{education.graduation}</span>
-                </div>
-                <div className="meta-item">
-                  <Award size={16} />
-                  <span>GPA: {education.gpa}</span>
                 </div>
               </div>
             </div>
@@ -218,74 +185,127 @@ const AboutPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Values Section */}
+      {/* What Drives Me Section */}
       <section className="values-section">
         <div className="container">
-          <motion.div 
+          <motion.div
             className="section-header"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2>My Values</h2>
-            <p>The principles that guide my work and life</p>
+            <h2>What Drives Me</h2>
+            <p>My principles and passions</p>
           </motion.div>
-          
-          <div className="values-grid">
-            {values.map((value, index) => (
-              <motion.div 
-                key={value.title}
-                className="value-card"
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <motion.div 
-                  className="value-icon"
-                  whileHover={{ rotate: 360 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  {value.icon}
-                </motion.div>
-                <h3>{value.title}</h3>
-                <p>{value.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Interests Section */}
-      <section className="interests-section">
-        <div className="container">
-          <motion.div 
-            className="section-header"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2>Beyond Code</h2>
-            <p>What drives me outside of work</p>
-          </motion.div>
-          
-          <div className="interests-grid">
-            {interests.map((interest, index) => (
-              <motion.div 
-                key={interest.title}
-                className="interest-card"
-                initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+          <div className="values-grid-combined">
+            <motion.div
+              className="value-card"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0 }}
+            >
+              <motion.div
+                className="value-icon"
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.5 }}
               >
-                <div className="interest-icon">{interest.icon}</div>
-                <div className="interest-content">
-                  <h4>{interest.title}</h4>
-                  <p>{interest.description}</p>
-                </div>
+                <Target />
               </motion.div>
-            ))}
+              <h3>Excellence</h3>
+              <p>Striving for the highest quality in everything I do</p>
+            </motion.div>
+
+            <motion.div
+              className="value-card"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              <motion.div
+                className="value-icon"
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Heart />
+              </motion.div>
+              <h3>Passion</h3>
+              <p>Genuinely loving the craft of building great software</p>
+            </motion.div>
+
+            <motion.div
+              className="value-card"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              <motion.div
+                className="value-icon"
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.5 }}
+              >
+                <BookOpen />
+              </motion.div>
+              <h3>Research</h3>
+              <p>Exploring AI & Machine Learning through academic papers</p>
+            </motion.div>
+
+            <motion.div
+              className="value-card"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+            >
+              <motion.div
+                className="value-icon"
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.5 }}
+              >
+                <TrendingUp />
+              </motion.div>
+              <h3>Finance</h3>
+              <p>Algorithmic trading and quantitative analysis</p>
+            </motion.div>
+
+            <motion.div
+              className="value-card"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+            >
+              <motion.div
+                className="value-icon"
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Sparkles />
+              </motion.div>
+              <h3>Innovation</h3>
+              <p>Always looking for creative solutions to complex problems</p>
+            </motion.div>
+
+            <motion.div
+              className="value-card"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 }}
+            >
+              <motion.div
+                className="value-icon"
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Users />
+              </motion.div>
+              <h3>Mentoring</h3>
+              <p>Teaching programming and helping students grow</p>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -293,7 +313,7 @@ const AboutPage: React.FC = () => {
       {/* Fun Facts */}
       <section className="fun-facts">
         <div className="container">
-          <motion.div 
+          <motion.div
             className="facts-content"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -301,15 +321,15 @@ const AboutPage: React.FC = () => {
           >
             <h2>Fun Facts</h2>
             <div className="facts-grid">
-              <motion.div 
+              <motion.div
                 className="fact-item"
                 whileHover={{ scale: 1.1 }}
               >
                 <Coffee size={32} />
-                <span className="fact-number">1000+</span>
-                <span className="fact-label">Cups of Coffee</span>
+                <span className="fact-number">{displayCount.toLocaleString()}+</span>
+                <span className="fact-label">Energy Drinks</span>
               </motion.div>
-              <motion.div 
+              <motion.div
                 className="fact-item"
                 whileHover={{ scale: 1.1 }}
               >
@@ -317,7 +337,7 @@ const AboutPage: React.FC = () => {
                 <span className="fact-number">100K+</span>
                 <span className="fact-label">Lines of Code</span>
               </motion.div>
-              <motion.div 
+              <motion.div
                 className="fact-item"
                 whileHover={{ scale: 1.1 }}
               >
@@ -325,7 +345,7 @@ const AboutPage: React.FC = () => {
                 <span className="fact-number">15+</span>
                 <span className="fact-label">Projects Completed</span>
               </motion.div>
-              <motion.div 
+              <motion.div
                 className="fact-item"
                 whileHover={{ scale: 1.1 }}
               >
@@ -337,6 +357,7 @@ const AboutPage: React.FC = () => {
           </motion.div>
         </div>
       </section>
+
     </div>
   );
 };
