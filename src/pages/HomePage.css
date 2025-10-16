@@ -8,6 +8,7 @@
   background: #0a0a0a;
   color: #ffffff;
   overflow-x: hidden;
+  overflow-y: visible;
   position: relative;
 }
 
@@ -35,6 +36,7 @@
   justify-content: center;
   padding: 2rem 2rem;
   z-index: 1;
+  overflow: visible;
 }
 
 .hero-content {
@@ -43,6 +45,7 @@
   text-align: center;
   position: relative;
   z-index: 2;
+  overflow: visible;
 }
 
 /* ===== AVATAR ===== */

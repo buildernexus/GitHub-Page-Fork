@@ -41,7 +41,7 @@ const Star = () => (
 
 // Logo icon only - for timeline dots (cropped to just show the mountain icon)
 const SunSkiLogoIcon = () => (
-  <svg viewBox="-5 -5 85 78" width="100%" height="100%" fill="currentColor" style={{ overflow: 'visible' }}>
+  <svg viewBox="-5 -5 85 78" width="80%" height="80%" fill="currentColor" style={{ overflow: 'visible' }}>
     <path d="M60.1,25.2c4.9-1.7,8.4-6.3,8.4-11.8C68.5,6.5,62.9,1,56,1S43.5,6.5,43.5,13.4c0,2,0.5,3.8,1.3,5.5l4.5-4.5L60.1,25.2z"/>
     <polygon points="25,18.4 0.7,42.7 12.9,54.8 25,42.7 49.3,66.9 61.4,54.8"/>
     <polygon points="39.1,28.5 63.4,52.8 73.5,42.7 49.2,18.5"/>
@@ -202,7 +202,7 @@ const ExperiencePage: React.FC = () => {
             transition={{ duration: 0.6 }}
           >
             {experiences.map((exp, index) => (
-              <motion.div 
+              <motion.div
                 key={exp.id}
                 className={`timeline-item ${exp.current ? 'current' : ''} ${selectedExperience === exp.id ? 'selected' : ''}`}
                 initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
@@ -263,7 +263,7 @@ const ExperiencePage: React.FC = () => {
                       <h4>Key Achievements</h4>
                       <ul>
                         {exp.achievements.map((achievement, i) => (
-                          <motion.li 
+                          <motion.li
                             key={i}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -275,12 +275,12 @@ const ExperiencePage: React.FC = () => {
                         ))}
                       </ul>
                     </div>
-                    
+
                     <div className="tech-stack">
                       <h4>Technologies Used</h4>
                       <div className="tech-tags">
                         {exp.technologies.map((tech, i) => (
-                          <motion.span 
+                          <motion.span
                             key={tech}
                             className="tech-tag"
                             initial={{ opacity: 0, scale: 0 }}

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import {
   GraduationCap, MapPin, Calendar, Award,
   Target, Heart, Coffee, Code2, BookOpen,
-  Sparkles, TrendingUp, Users, Star
+  Sparkles, TrendingUp, Users, Star, User
 } from 'lucide-react';
 import './AboutPage.css';
 
@@ -53,7 +53,7 @@ const AboutPage: React.FC = () => {
     {
       title: 'IBM Data Science Professional Certificate',
       issuer: 'IBM',
-      date: '2024',
+      date: '2025',
       skills: ['Machine Learning', 'SQL', 'Data Visualization']
     }
   ];
@@ -82,6 +82,14 @@ const AboutPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
+          <motion.div
+            className="hero-icon"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: 'spring' }}
+          >
+            <User size={48} />
+          </motion.div>
           <h1 className="hero-title">About Me</h1>
           <p className="hero-subtitle">
             Data Scientist | Machine Learning Engineer | AI Researcher
@@ -195,7 +203,6 @@ const AboutPage: React.FC = () => {
             viewport={{ once: true }}
           >
             <h2>What Drives Me</h2>
-            <p>My principles and passions</p>
           </motion.div>
 
           <div className="values-grid-combined">
