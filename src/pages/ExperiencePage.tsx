@@ -39,6 +39,19 @@ const Star = () => (
   </svg>
 );
 
+// Logo icon only - for timeline dots (cropped to just show the mountain icon)
+const SunSkiLogoIcon = () => (
+  <svg viewBox="-5 -5 85 78" width="100%" height="100%" fill="currentColor" style={{ overflow: 'visible' }}>
+    <path d="M60.1,25.2c4.9-1.7,8.4-6.3,8.4-11.8C68.5,6.5,62.9,1,56,1S43.5,6.5,43.5,13.4c0,2,0.5,3.8,1.3,5.5l4.5-4.5L60.1,25.2z"/>
+    <polygon points="25,18.4 0.7,42.7 12.9,54.8 25,42.7 49.3,66.9 61.4,54.8"/>
+    <polygon points="39.1,28.5 63.4,52.8 73.5,42.7 49.2,18.5"/>
+    <polygon points="0.7,42.7 12.9,54.8 25,18.5"/>
+    <polygon points="25,18.5 25,42.7 49.2,66.9"/>
+    <polygon points="39.1,28.5 63.4,52.8 49.2,18.5" opacity="0.2"/>
+  </svg>
+);
+
+// Full logo with text - for company name display in content
 const SunSkiLogo = () => (
   <svg viewBox="0 0 242.2 68" width="180" height="52" fill="currentColor">
     <path d="M60.1,25.2c4.9-1.7,8.4-6.3,8.4-11.8C68.5,6.5,62.9,1,56,1S43.5,6.5,43.5,13.4c0,2,0.5,3.8,1.3,5.5l4.5-4.5L60.1,25.2z"/>
@@ -86,7 +99,7 @@ const ExperiencePage: React.FC = () => {
         'Developed predictive models for inventory optimization with 85% accuracy'
       ],
       technologies: ['Python', 'PostgreSQL', 'Power BI', 'Pandas', 'NumPy', 'Scikit-learn', 'ETL', 'Azure'],
-      icon: <SunSkiLogo />,
+      icon: <SunSkiLogoIcon />,
       color: '#667eea'
     },
     {
@@ -237,14 +250,14 @@ const ExperiencePage: React.FC = () => {
                   
                   <p className="description">{exp.description}</p>
                   
-                  <motion.div 
+                  <motion.div
                     className="expanded-content"
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ 
-                      height: selectedExperience === exp.id ? 'auto' : 0,
+                    initial={{ maxHeight: 0, opacity: 0 }}
+                    animate={{
+                      maxHeight: selectedExperience === exp.id ? '1000px' : 0,
                       opacity: selectedExperience === exp.id ? 1 : 0
                     }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
                   >
                     <div className="achievements">
                       <h4>Key Achievements</h4>
