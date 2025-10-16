@@ -2,12 +2,13 @@
 .experience-page {
   min-height: 100vh;
   background: #0a0a0a;
+  padding-bottom: 0;
 }
 
 /* Hero Section */
 .experience-hero {
   padding: 8rem 0 4rem;
-  background: linear-gradient(180deg, #050505 0%, #0a0a0a 100%);
+  background: #0a0a0a;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   text-align: center;
 }
@@ -325,7 +326,7 @@
 /* Impact Metrics Section */
 .impact-section {
   padding: 6rem 0;
-  background: linear-gradient(180deg, #0a0a0a 0%, #050505 100%);
+  background: #0a0a0a;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -513,9 +514,11 @@
 
 /* Achievements Section */
 .achievements-section {
-  padding: 6rem 0;
+  padding: 6rem 0 0 0;
   background: #0a0a0a;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 100vh;
+  margin-bottom: -100vh;
 }
 
 .achievements-grid {

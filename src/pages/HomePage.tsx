@@ -47,27 +47,12 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
     commits: 0
   });
 
+  const [totalCommits, setTotalCommits] = useState(1000); // Default fallback
+
   // Three.js 3D Scene
   const containerRef = useRef<HTMLDivElement>(null);
   const mousePos = useRef({ x: 0, y: 0 });
   const [show3D, setShow3D] = useState(true);
-
-  // Hide 3D render after scrolling
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const heroHeight = window.innerHeight;
-
-      if (scrollPosition > heroHeight * 0.5) {
-        setShow3D(false);
-      } else {
-        setShow3D(true);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -225,6 +210,40 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
     return () => clearInterval(typingInterval);
   }, [currentRole]);
 
+  // Fetch GitHub commit count
+  useEffect(() => {
+    const fetchGitHubCommits = async () => {
+      try {
+        const username = 'jguliz'; // Your GitHub username
+        const response = await fetch(`https://api.github.com/users/${username}/events?per_page=100`);
+
+        if (response.ok) {
+          const events = await response.json();
+          // Count PushEvents
+          const pushEvents = events.filter((event: any) => event.type === 'PushEvent');
+          const commitCount = pushEvents.reduce((total: number, event: any) => {
+            return total + (event.payload.commits?.length || 0);
+          }, 0);
+
+          // Fetch all repos and sum up commit counts (approximate)
+          const reposResponse = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`);
+          if (reposResponse.ok) {
+            const repos = await reposResponse.json();
+            // This is an approximation - GitHub API doesn't provide total commits easily
+            // We'll use a multiplier based on repo count and activity
+            const estimatedTotal = repos.length * 50 + commitCount; // Rough estimate
+            setTotalCommits(estimatedTotal > 1000 ? estimatedTotal : 1000);
+          }
+        }
+      } catch (error) {
+        console.log('Could not fetch GitHub stats, using default');
+        setTotalCommits(1000);
+      }
+    };
+
+    fetchGitHubCommits();
+  }, []);
+
   useEffect(() => {
     // Animate counters when in view
     if (isStatsInView) {
@@ -246,9 +265,9 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       animateCounter(20, 'projects');
       animateCounter(30, 'skills');
       animateCounter(4, 'experience');
-      animateCounter(1000, 'commits');
+      animateCounter(totalCommits, 'commits');
     }
-  }, [isStatsInView]);
+  }, [isStatsInView, totalCommits]);
 
   const features = [
     {
@@ -300,10 +319,6 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       <div
         ref={containerRef}
         className="threejs-container"
-        style={{
-          opacity: show3D ? 1 : 0,
-          transition: 'opacity 0.5s ease-out'
-        }}
       />
 
       {/* Hero Section */}
@@ -409,15 +424,15 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </motion.a>
             </div>
           </motion.div>
+        </motion.div>
 
-          {/* Scroll Indicator */}
-          <motion.div
-            className="scroll-indicator"
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <ChevronDown size={24} />
-          </motion.div>
+        {/* Scroll Indicator */}
+        <motion.div
+          className="scroll-indicator"
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <ChevronDown size={24} />
         </motion.div>
       </section>
 

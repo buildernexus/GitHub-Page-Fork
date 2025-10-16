@@ -350,7 +350,7 @@ const App: React.FC = () => {
           background: #0f0f0f;
           border-top: 1px solid rgba(255, 255, 255, 0.05);
           padding: 3rem 0 2rem;
-          margin-top: 5rem;
+          margin-top: 0;
         }
 
         .footer-content {
