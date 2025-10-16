@@ -1,12 +1,12 @@
 // src/components/projects/ProjectDetail.tsx
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowLeft, Github, ExternalLink, Play, Download,
+import {
+  ArrowLeft, Github, Play, Download,
   Calendar, Clock, CheckCircle, Activity, Star,
-  Code2, Zap, Target, Users, TrendingUp, Award,
-  ChevronRight, Copy, Check, Maximize2, X, 
-  Layers, Shield, Database, Cpu, Globe, Terminal
+  Zap, TrendingUp,
+  ChevronRight, Maximize2, X,
+  Layers, Shield, Database, Cpu, Globe
 } from 'lucide-react';
 import { type Project, getProjectById } from '../../data/projectsData';
 import './ProjectDetail.css';
@@ -19,7 +19,6 @@ interface ProjectDetailProps {
 const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack }) => {
   const [project, setProject] = useState<Project | undefined>();
   const [activeSection, setActiveSection] = useState('overview');
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -42,20 +41,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack }) => {
     { id: 'overview', label: 'Overview', icon: <Globe /> },
     { id: 'tech', label: 'Tech Stack', icon: <Layers /> },
     { id: 'features', label: 'Features', icon: <Zap /> },
-    { id: 'code', label: 'Code Samples', icon: <Code2 /> },
     { id: 'challenges', label: 'Challenges', icon: <Shield /> },
     { id: 'impact', label: 'Impact', icon: <TrendingUp /> }
   ];
-
-  const handleCopyCode = async (code: string, snippetId: string) => {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopiedCode(snippetId);
-      setTimeout(() => setCopiedCode(null), 2000);
-    } catch (err) {
-      console.error('Failed to copy code');
-    }
-  };
 
   const techCategories = {
     frontend: { label: 'Frontend', icon: <Globe />, color: '#667eea' },
@@ -213,7 +201,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack }) => {
                 }}
               >
                 <div className="metric-icon">
-                  <Target size={24} />
+                  <TrendingUp size={24} />
                 </div>
                 <div className="metric-content">
                   <div className="metric-value">{metric.value}</div>
@@ -417,62 +405,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack }) => {
                     </div>
                     <h4>{feature.title}</h4>
                     <p>{feature.description}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {/* Code Samples Section */}
-          {activeSection === 'code' && project.codeSnippets && (
-            <motion.div 
-              key="code"
-              className="section-content"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-            >
-              <h3>Code Samples</h3>
-              
-              <div className="code-samples">
-                {project.codeSnippets.map((snippet, index) => (
-                  <motion.div 
-                    key={index}
-                    className="code-sample"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <div className="code-header">
-                      <div className="code-title">
-                        <Terminal size={18} />
-                        <span>{snippet.title}</span>
-                      </div>
-                      <div className="code-language">{snippet.language}</div>
-                      <motion.button 
-                        className="copy-button"
-                        onClick={() => handleCopyCode(snippet.code, `snippet-${index}`)}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                      >
-                        {copiedCode === `snippet-${index}` ? (
-                          <>
-                            <Check size={16} />
-                            <span>Copied!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy size={16} />
-                            <span>Copy</span>
-                          </>
-                        )}
-                      </motion.button>
-                    </div>
-                    <pre className="code-block">
-                      <code className={`language-${snippet.language}`}>
-                        {snippet.code.trim()}
-                      </code>
-                    </pre>
                   </motion.div>
                 ))}
               </div>

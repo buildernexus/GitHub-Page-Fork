@@ -1,14 +1,14 @@
 /* src/components/projects/ProjectsShowcase.css */
 .projects-showcase {
   min-height: 100vh;
-  background: #0a0a0a;
+  background: linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 50%, #000000 100%);
   position: relative;
 }
 
 /* Hero Section */
 .showcase-hero {
   padding: 8rem 0 4rem;
-  background: linear-gradient(180deg, #050505 0%, #0a0a0a 100%);
+  background: transparent;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   text-align: center;
 }
@@ -44,7 +44,7 @@
 /* Controls */
 .showcase-controls {
   padding: 3rem 0;
-  background: #0a0a0a;
+  background: transparent;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -427,7 +427,7 @@
 }
 
 .projects-grid.grid {
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .projects-grid.list {

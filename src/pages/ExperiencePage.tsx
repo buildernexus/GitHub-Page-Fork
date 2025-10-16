@@ -3,9 +3,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Briefcase, Calendar, MapPin, ChevronRight,
-  Database, Code2, TrendingUp, Users,
-  CheckCircle, Award, Zap, Target,
-  BookOpen, GitBranch, Terminal, Globe
+  TrendingUp, Users,
+  CheckCircle
 } from 'lucide-react';
 import './ExperiencePage.css';
 
@@ -25,19 +24,6 @@ interface Experience {
   icon: React.ReactNode;
   color: string;
 }
-
-const Trophy = () => (
-  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6m12 0h1.5a2.5 2.5 0 0 1 0 5H18M6 4h12v11a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V4Z"/>
-    <path d="M12 19v3m-4 0h8"/>
-  </svg>
-);
-
-const Star = () => (
-  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-  </svg>
-);
 
 // Logo icon only - for timeline dots (cropped to just show the mountain icon)
 const SunSkiLogoIcon = () => (
@@ -146,26 +132,6 @@ const ExperiencePage: React.FC = () => {
     }
   ];
 
-  const achievements = [
-    {
-      icon: <Award />,
-      title: 'Dean\'s List',
-      description: 'Maintained 3.8+ GPA for multiple semesters',
-      date: '2023-2025'
-    },
-    {
-      icon: <Trophy />,
-      title: 'Hackathon Winner',
-      description: 'First place in UH Hackathon 2024',
-      date: '2024'
-    },
-    {
-      icon: <Star />,
-      title: 'Top Performer',
-      description: 'Recognized for exceptional data analysis work',
-      date: '2025'
-    }
-  ];
 
   return (
     <div className="experience-page">
@@ -303,46 +269,6 @@ const ExperiencePage: React.FC = () => {
               </motion.div>
             ))}
           </motion.div>
-        </div>
-      </section>
-
-      {/* Achievements Section */}
-      <section className="achievements-section">
-        <div className="container">
-          <motion.div 
-            className="section-header"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2>Achievements & Recognition</h2>
-            <p>Milestones and accomplishments throughout my career</p>
-          </motion.div>
-          
-          <div className="achievements-grid">
-            {achievements.map((achievement, index) => (
-              <motion.div 
-                key={achievement.title}
-                className="achievement-card"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.05, rotateY: 10 }}
-              >
-                <motion.div 
-                  className="achievement-icon"
-                  whileHover={{ rotate: 360 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  {achievement.icon}
-                </motion.div>
-                <h3>{achievement.title}</h3>
-                <p>{achievement.description}</p>
-                <span className="achievement-date">{achievement.date}</span>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
     </div>
