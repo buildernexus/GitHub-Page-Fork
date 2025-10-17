@@ -6,9 +6,18 @@ import {
   Calendar, Clock, CheckCircle, Activity, Star,
   Zap, TrendingUp,
   ChevronRight, Maximize2, X,
-  Layers, Shield, Database, Cpu, Globe
+  Layers, Shield, Database, Cpu, Globe, Terminal, Eye, GitFork
 } from 'lucide-react';
-import { type Project, getProjectById } from '../../data/projectsData';
+import {
+  SiPython, SiJavascript, SiTypescript, SiReact, SiNodedotjs,
+  SiPostgresql, SiMysql, SiMongodb, SiRedis,
+  SiPytorch, SiTensorflow, SiScikitlearn, SiPandas, SiNumpy,
+  SiDocker, SiGit, SiGithub, SiAmazon,
+  SiFastapi, SiFlask, SiDjango,
+  SiCplusplus, SiSwift, SiR
+} from 'react-icons/si';
+import { type Project, getProjectById } from '../../data/ProjectsData';
+import { fetchGitHubStats, formatCount, getLanguagePercentages, type GitHubRepoStats } from '../../services/githubApi';
 import './ProjectDetail.css';
 
 interface ProjectDetailProps {
@@ -16,16 +25,68 @@ interface ProjectDetailProps {
   onBack?: () => void;
 }
 
+// Helper function to get tech logo by name
+const getTechLogo = (techName: string) => {
+  const name = techName.toLowerCase();
+  const iconProps = { size: 48 };
+
+  // Map tech names to their corresponding icons (only using verified imports)
+  const iconMap: Record<string, JSX.Element> = {
+    'python': <SiPython {...iconProps} />,
+    'javascript': <SiJavascript {...iconProps} />,
+    'typescript': <SiTypescript {...iconProps} />,
+    'react': <SiReact {...iconProps} />,
+    'node.js': <SiNodedotjs {...iconProps} />,
+    'nodejs': <SiNodedotjs {...iconProps} />,
+    'postgresql': <SiPostgresql {...iconProps} />,
+    'mysql': <SiMysql {...iconProps} />,
+    'mongodb': <SiMongodb {...iconProps} />,
+    'redis': <SiRedis {...iconProps} />,
+    'pytorch': <SiPytorch {...iconProps} />,
+    'tensorflow': <SiTensorflow {...iconProps} />,
+    'scikit-learn': <SiScikitlearn {...iconProps} />,
+    'pandas': <SiPandas {...iconProps} />,
+    'numpy': <SiNumpy {...iconProps} />,
+    'docker': <SiDocker {...iconProps} />,
+    'git': <SiGit {...iconProps} />,
+    'github': <SiGithub {...iconProps} />,
+    'aws': <SiAmazon {...iconProps} />,
+    'fastapi': <SiFastapi {...iconProps} />,
+    'flask': <SiFlask {...iconProps} />,
+    'django': <SiDjango {...iconProps} />,
+    'c++': <SiCplusplus {...iconProps} />,
+    'swift': <SiSwift {...iconProps} />,
+    'r': <SiR {...iconProps} />,
+  };
+
+  return iconMap[name] || null;
+};
+
 const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack }) => {
   const [project, setProject] = useState<Project | undefined>();
   const [activeSection, setActiveSection] = useState('overview');
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [githubStats, setGithubStats] = useState<GitHubRepoStats | null>(null);
+  const [loadingGithub, setLoadingGithub] = useState(false);
 
   useEffect(() => {
     const projectData = getProjectById(projectId);
     setProject(projectData);
     window.scrollTo(0, 0);
+
+    // Fetch GitHub stats if project has a GitHub URL
+    if (projectData?.github) {
+      setLoadingGithub(true);
+      fetchGitHubStats(projectData.github)
+        .then(stats => {
+          setGithubStats(stats);
+          setLoadingGithub(false);
+        })
+        .catch(() => {
+          setLoadingGithub(false);
+        });
+    }
   }, [projectId]);
 
   if (!project) {
@@ -101,10 +162,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack }) => {
                   Featured
                 </span>
               )}
-              <span className="status-badge" style={{
-                background: project.status === 'completed' ? '#00d4aa' : 
-                          project.status === 'in-progress' ? '#ffd700' : '#667eea'
-              }}>
+              <span className={`status-badge ${project.status}`}>
                 {project.status === 'completed' ? <CheckCircle size={16} /> :
                  project.status === 'in-progress' ? <Activity size={16} /> : <Clock size={16} />}
                 {project.status.replace('-', ' ')}
@@ -179,7 +237,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack }) => {
       {/* Key Metrics */}
       <div className="metrics-section">
         <div className="metrics-container">
-          <motion.h2 
+          <motion.h2
             className="section-title"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -189,13 +247,13 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack }) => {
           </motion.h2>
           <div className="metrics-grid">
             {project.metrics.map((metric, index) => (
-              <motion.div 
+              <motion.div
                 key={metric.label}
                 className="metric-card"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.4 + index * 0.1 }}
-                whileHover={{ 
+                whileHover={{
                   scale: 1.05,
                   boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
                 }}
@@ -209,6 +267,86 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack }) => {
                 </div>
               </motion.div>
             ))}
+
+            {/* GitHub Stats */}
+            {project.github && githubStats && (
+              <>
+                <motion.div
+                  className="metric-card"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4 + project.metrics.length * 0.1 }}
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
+                  }}
+                >
+                  <div className="metric-icon">
+                    <Star size={24} />
+                  </div>
+                  <div className="metric-content">
+                    <div className="metric-value">{formatCount(githubStats.stars)}</div>
+                    <div className="metric-label">GitHub Stars</div>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  className="metric-card"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4 + (project.metrics.length + 1) * 0.1 }}
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
+                  }}
+                >
+                  <div className="metric-icon">
+                    <GitFork size={24} />
+                  </div>
+                  <div className="metric-content">
+                    <div className="metric-value">{formatCount(githubStats.forks)}</div>
+                    <div className="metric-label">Forks</div>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  className="metric-card"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4 + (project.metrics.length + 2) * 0.1 }}
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
+                  }}
+                >
+                  <div className="metric-icon">
+                    <Eye size={24} />
+                  </div>
+                  <div className="metric-content">
+                    <div className="metric-value">{formatCount(githubStats.watchers)}</div>
+                    <div className="metric-label">Watchers</div>
+                  </div>
+                </motion.div>
+              </>
+            )}
+
+            {/* Loading state for GitHub stats */}
+            {project.github && loadingGithub && (
+              <motion.div
+                className="metric-card"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 + project.metrics.length * 0.1 }}
+              >
+                <div className="metric-icon">
+                  <Github size={24} />
+                </div>
+                <div className="metric-content">
+                  <div className="metric-value">...</div>
+                  <div className="metric-label">Loading GitHub Stats</div>
+                </div>
+              </motion.div>
+            )}
           </div>
         </div>
       </div>
@@ -314,6 +452,36 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack }) => {
                       ))}
                     </div>
                   </div>
+
+                  {/* GitHub Languages */}
+                  {project.github && githubStats?.languages && (
+                    <div className="sidebar-card">
+                      <h4>Repository Languages</h4>
+                      <div className="languages-list">
+                        {getLanguagePercentages(githubStats.languages)
+                          .slice(0, 5) // Show top 5 languages
+                          .map((lang) => (
+                            <div key={lang.name} className="language-item">
+                              <div className="language-header">
+                                <span className="language-name">{lang.name}</span>
+                                <span className="language-percentage">{lang.percentage}%</span>
+                              </div>
+                              <div className="language-bar">
+                                <motion.div
+                                  className="language-bar-fill"
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${lang.percentage}%` }}
+                                  transition={{ duration: 0.8, delay: 0.2 }}
+                                  style={{
+                                    background: `linear-gradient(90deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))`
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -321,7 +489,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack }) => {
 
           {/* Tech Stack Section */}
           {activeSection === 'tech' && (
-            <motion.div 
+            <motion.div
               key="tech"
               className="section-content"
               initial={{ opacity: 0, x: 20 }}
@@ -329,49 +497,37 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack }) => {
               exit={{ opacity: 0, x: -20 }}
             >
               <h3>Technology Stack</h3>
-              
-              <div className="tech-categories">
-                {Object.entries(techCategories).map(([category, config]) => {
-                  const techs = project.techStack.filter(t => t.category === category);
-                  if (techs.length === 0) return null;
-                  
+
+              <div className="tech-stack-grid">
+                {project.techStack.map((tech, index) => {
+                  const logo = getTechLogo(tech.name);
                   return (
-                    <motion.div 
-                      key={category}
-                      className="tech-category"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
+                    <motion.div
+                      key={tech.name}
+                      className="tech-stack-card"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.05 }}
+                      whileHover={{ scale: 1.05, y: -5 }}
                     >
-                      <div className="category-header" style={{ color: config.color }}>
-                        {config.icon}
-                        <h4>{config.label}</h4>
-                      </div>
-                      
-                      <div className="tech-list">
-                        {techs.map((tech, index) => (
-                          <motion.div 
-                            key={tech.name}
-                            className="tech-item"
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                          >
-                            <div className="tech-info">
-                              <span className="tech-name">{tech.name}</span>
-                              <span className="tech-proficiency">{tech.proficiency}%</span>
-                            </div>
-                            <div className="proficiency-bar">
-                              <motion.div 
-                                className="proficiency-fill"
-                                initial={{ width: 0 }}
-                                animate={{ width: `${tech.proficiency}%` }}
-                                transition={{ delay: 0.5 + index * 0.1, duration: 0.8 }}
-                                style={{ background: config.color }}
-                              />
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
+                      <motion.div
+                        className="tech-stack-icon"
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {logo || (
+                          <>
+                            {tech.category === 'frontend' && <Globe size={24} />}
+                            {tech.category === 'backend' && <Database size={24} />}
+                            {tech.category === 'database' && <Database size={24} />}
+                            {tech.category === 'ml' && <Cpu size={24} />}
+                            {tech.category === 'cloud' && <Globe size={24} />}
+                            {tech.category === 'tools' && <Terminal size={24} />}
+                          </>
+                        )}
+                      </motion.div>
+                      <h4 className="tech-stack-name">{tech.name}</h4>
+                      <span className="tech-stack-category">{tech.category}</span>
                     </motion.div>
                   );
                 })}

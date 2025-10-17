@@ -1,5 +1,6 @@
 // src/App.tsx
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Navigation from './components/common/Navigation';
 import HomePage from './pages/HomePage';
@@ -35,33 +36,27 @@ const pageVariants = {
   exit: { opacity: 0, y: -20 }
 };
 
+// Wrapper components for routing
+const HomePageWrapper = () => {
+  const navigate = useNavigate();
+  return <HomePage onNavigate={(page) => navigate(`/${page}`)} />;
+};
+
+const ProjectsWrapper = () => {
+  const navigate = useNavigate();
+  return <ProjectsShowcase onProjectSelect={(id) => navigate(`/projects/${id}`)} />;
+};
+
+const ProjectDetailWrapper = () => {
+  const navigate = useNavigate();
+  const { projectId } = useParams<{ projectId: string }>();
+  return <ProjectDetail projectId={projectId || ''} onBack={() => navigate('/projects')} />;
+};
+
 const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<string>('home');
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-
-  // Handle navigation
-  const handleNavigate = (page: string) => {
-    setCurrentPage(page);
-    setSelectedProjectId(null); // Reset project selection when navigating
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Handle project selection
-  const handleProjectSelect = (projectId: string) => {
-    setSelectedProjectId(projectId);
-    setCurrentPage('project-detail');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Handle back from project detail
-  const handleBackFromProject = () => {
-    setSelectedProjectId(null);
-    setCurrentPage('projects');
-  };
-
-  // Main app render
   return (
-    <div className="app">
+    <Router basename="/GitHub-Page">
+      <div className="app">
       {/* Background effects */}
       <div className="app-background">
         <div className="bg-grid" />
@@ -69,107 +64,22 @@ const App: React.FC = () => {
       </div>
 
       {/* Navigation */}
-      <Navigation currentPage={currentPage} onNavigate={handleNavigate} />
+      <Navigation />
 
       {/* Main content */}
       <main className="main-content">
-        <AnimatePresence mode="wait">
-          <Suspense fallback={<PageLoader />}>
-            {currentPage === 'home' && (
-              <motion.div
-                key="home"
-                variants={pageVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.3 }}
-              >
-                <HomePage onNavigate={handleNavigate} />
-              </motion.div>
-            )}
-
-            {currentPage === 'about' && (
-              <motion.div
-                key="about"
-                variants={pageVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.3 }}
-              >
-                <AboutPage />
-              </motion.div>
-            )}
-
-            {currentPage === 'experience' && (
-              <motion.div
-                key="experience"
-                variants={pageVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.3 }}
-              >
-                <ExperiencePage />
-              </motion.div>
-            )}
-
-            {currentPage === 'projects' && (
-              <motion.div
-                key="projects"
-                variants={pageVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.3 }}
-              >
-                <ProjectsShowcase onProjectSelect={handleProjectSelect} />
-              </motion.div>
-            )}
-
-            {currentPage === 'project-detail' && selectedProjectId && (
-              <motion.div
-                key="project-detail"
-                variants={pageVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.3 }}
-              >
-                <ProjectDetail 
-                  projectId={selectedProjectId} 
-                  onBack={handleBackFromProject}
-                />
-              </motion.div>
-            )}
-
-            {currentPage === 'research' && (
-              <motion.div
-                key="research"
-                variants={pageVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.3 }}
-              >
-                <ResearchPage />
-              </motion.div>
-            )}
-
-            {currentPage === 'contact' && (
-              <motion.div
-                key="contact"
-                variants={pageVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.3 }}
-              >
-                <ContactPage />
-              </motion.div>
-            )}
-          </Suspense>
-        </AnimatePresence>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<HomePageWrapper />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/experience" element={<ExperiencePage />} />
+            <Route path="/projects" element={<ProjectsWrapper />} />
+            <Route path="/projects/:projectId" element={<ProjectDetailWrapper />} />
+            <Route path="/research" element={<ResearchPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
       </main>
 
       {/* Footer */}
@@ -181,9 +91,9 @@ const App: React.FC = () => {
           </div>
           <div className="footer-section">
             <h5>Quick Links</h5>
-            <button onClick={() => handleNavigate('projects')}>Projects</button>
-            <button onClick={() => handleNavigate('about')}>About</button>
-            <button onClick={() => handleNavigate('contact')}>Contact</button>
+            <a href="/GitHub-Page/projects">Projects</a>
+            <a href="/GitHub-Page/about">About</a>
+            <a href="/GitHub-Page/contact">Contact</a>
           </div>
           <div className="footer-section">
             <h5>Connect</h5>
@@ -421,7 +331,8 @@ const App: React.FC = () => {
           }
         }
       `}</style>
-    </div>
+      </div>
+    </Router>
   );
 };
 

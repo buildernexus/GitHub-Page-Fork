@@ -472,6 +472,24 @@
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
+.status-badge.completed {
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.2), rgba(0, 212, 170, 0.1));
+  border: 1px solid rgba(0, 212, 170, 0.4);
+  color: #00d4aa;
+}
+
+.status-badge.in-progress {
+  background: linear-gradient(135deg, rgba(255, 165, 0, 0.2), rgba(255, 165, 0, 0.1));
+  border: 1px solid rgba(255, 165, 0, 0.4);
+  color: #ffa500;
+}
+
+.status-badge.maintained {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(102, 126, 234, 0.1));
+  border: 1px solid rgba(102, 126, 234, 0.4);
+  color: #667eea;
+}
+
 .status-badge svg {
   width: 12px;
   height: 12px;

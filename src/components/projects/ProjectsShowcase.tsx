@@ -8,7 +8,7 @@ import {
   Zap, Users, Award, Target, BarChart3,
   ChevronRight, Sparkles, Play, Eye
 } from 'lucide-react';
-import { projectsData, type Project } from '../../data/projectsData';
+import { projectsData, type Project } from '../../data/ProjectsData';
 import './ProjectsShowcase.css';
 
 interface ProjectsShowcaseProps {
@@ -86,7 +86,7 @@ const ProjectsShowcase: React.FC<ProjectsShowcaseProps> = ({ onProjectSelect }) 
         onClick={() => onProjectSelect?.(project.id)}
       >
         {/* Status Badge */}
-        <div className="status-badge">
+        <div className={`status-badge ${project.status}`}>
           {statusColors[project.status].icon}
           <span>{statusColors[project.status].text}</span>
         </div>

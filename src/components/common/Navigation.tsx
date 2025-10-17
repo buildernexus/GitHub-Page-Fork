@@ -1,30 +1,30 @@
 // src/components/common/Navigation.tsx
 // Updated navigation with project-detail routing support
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Home, User, Briefcase, Code2, Brain, Mail, 
+import {
+  Home, User, Briefcase, Code2, Brain, Mail,
   Menu, X, Github, Linkedin, Download, Sparkles
 } from 'lucide-react';
 import './Navigation.css';
 
-interface NavigationProps {
-  currentPage: string;
-  onNavigate: (page: string) => void;
-}
-
-const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate }) => {
+const Navigation: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { id: 'home', label: 'Home', icon: <Home size={18} /> },
-    { id: 'about', label: 'About', icon: <User size={18} /> },
-    { id: 'experience', label: 'Experience', icon: <Briefcase size={18} /> },
-    { id: 'projects', label: 'Projects', icon: <Code2 size={18} /> },
-    { id: 'research', label: 'Research', icon: <Brain size={18} /> },
-    { id: 'contact', label: 'Contact', icon: <Mail size={18} /> },
+    { id: '/', label: 'Home', icon: <Home size={18} /> },
+    { id: '/about', label: 'About', icon: <User size={18} /> },
+    { id: '/experience', label: 'Experience', icon: <Briefcase size={18} /> },
+    { id: '/projects', label: 'Projects', icon: <Code2 size={18} /> },
+    { id: '/research', label: 'Research', icon: <Brain size={18} /> },
+    { id: '/contact', label: 'Contact', icon: <Mail size={18} /> },
   ];
+
+  const currentPath = location.pathname;
 
   const socialLinks = [
     { 
@@ -56,8 +56,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate }) => {
     }
   }, [mobileMenuOpen]);
 
-  const handleNavClick = (page: string) => {
-    onNavigate(page);
+  const handleNavClick = (path: string) => {
+    navigate(path);
     setMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -74,7 +74,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate }) => {
           {/* Logo */}
           <motion.div
             className="nav-logo"
-            onClick={() => handleNavClick('home')}
+            onClick={() => handleNavClick('/')}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -84,7 +84,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate }) => {
           {/* Desktop Menu */}
           <div className="nav-menu desktop">
             {navItems.map((item) => {
-              const isActive = currentPage === item.id || (currentPage === 'project-detail' && item.id === 'projects');
+              const isActive = currentPath === item.id || (currentPath.startsWith('/projects') && item.id === '/projects');
 
               return (
                 <motion.button
@@ -198,7 +198,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate }) => {
 
               <nav className="mobile-nav">
                 {navItems.map((item, index) => {
-                  const isActive = currentPage === item.id || (currentPage === 'project-detail' && item.id === 'projects');
+                  const isActive = currentPath === item.id || (currentPath.startsWith('/projects') && item.id === '/projects');
                   return (
                     <motion.button
                       key={item.id}
