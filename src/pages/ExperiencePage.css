@@ -135,7 +135,6 @@
 
 .timeline-content {
   width: 42%;
-  min-width: 700px;
   max-width: 850px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -602,6 +601,7 @@
 @media (min-width: 1600px) {
   .timeline-content {
     width: calc(50% + 50px);
+    min-width: 700px;
     max-width: none;
   }
 
@@ -616,31 +616,39 @@
 
 @media (min-width: 1200px) and (max-width: 1599px) {
   .timeline-content {
-    width: calc(50% + 30px);
-    max-width: none;
+    width: 35% !important;
+    min-width: 600px !important;
+    max-width: 700px !important;
+    padding: 1.5rem !important;
   }
 
   .timeline-item:nth-child(odd) .timeline-content {
     margin-right: 30px;
+    left: 160px;
   }
 
   .timeline-item:nth-child(even) .timeline-content {
     margin-left: 30px;
+    right: 160px;
   }
 }
 
 @media (max-width: 1199px) and (min-width: 769px) {
   .timeline-content {
-    width: calc(50% + 10px);
-    max-width: none;
+    width: 35% !important;
+    min-width: 550px !important;
+    max-width: 650px !important;
+    padding: 1.5rem !important;
   }
 
   .timeline-item:nth-child(odd) .timeline-content {
     margin-right: 40px;
+    left: 140px;
   }
 
   .timeline-item:nth-child(even) .timeline-content {
     margin-left: 40px;
+    right: 140px;
   }
 }
 
